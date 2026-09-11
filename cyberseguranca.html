@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cibersegurança: Protegendo o Mundo Digital</title>
+<style>
+  :root{
+    --bg-0:#060912;
+    --bg-1:#0b1120;
+    --bg-2:#0f1830;
+    --panel:#111c36;
+    --panel-2:#0d1729;
+    --border:rgba(120,170,255,0.18);
+    --text:#eaf2ff;
+    --text-dim:#a9b8d6;
+    --blue:#4fd1ff;
+    --blue-2:#3b82f6;
+    --purple:#a78bfa;
+    --green:#39ff9c;
+    --red:#ff5d7a;
+    --yellow:#ffd166;
+    --shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%; width:100%;
+    background:var(--bg-0);
+    color:var(--text);
+    font-family:'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    overflow:hidden;
+  }
+  body{
+    background:
+      radial-gradient(circle at 15% 20%, rgba(59,130,246,0.14), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(167,139,250,0.14), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(57,255,156,0.06), transparent 40%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1) 60%, var(--bg-0));
+  }
+  /* animated circuit / grid background */
+  .bg-grid{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(79,209,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,209,255,0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at 50% 40%, black 0%, transparent 75%);
+  }
+  .bg-glow{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(79,209,255,0.06), transparent 60%);
+    transition: background 0.3s ease;
+  }
+
+  .deck{
+    position:relative; z-index:1;
+    height:100vh; width:100vw;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .slide{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 6vh 7vw;
+    opacity:0;
+    visibility:hidden;
+    transform: translateX(40px) scale(0.98);
+    transition: opacity 0.55s ease, transform 0.55s ease, visibility 0.55s;
+  }
+  .slide.active{
+    opacity:1;
+    visibility:visible;
+    transform: translateX(0) scale(1);
+    z-index:2;
+  }
+  .slide.prev{
+    transform: translateX(-40px) scale(0.98);
+  }
+
+  .slide-inner{
+    width:100%;
+    max-width:1300px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1.4rem;
+  }
+
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.35em;
+    font-size:clamp(0.7rem, 1vw, 0.95rem);
+    color:var(--green);
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+  }
+  .eyebrow::before, .eyebrow::after{
+    content:"";
+    height:1px; width:36px;
+    background:linear-gradient(90deg, transparent, var(--green));
+  }
+  .eyebrow::after{ background:linear-gradient(90deg, var(--green), transparent); }
+
+  h1{
+    font-size:clamp(2.4rem, 5vw, 4.6rem);
+    line-height:1.08;
+    margin:0;
+    text-align:center;
+    font-weight:800;
+    background:linear-gradient(120deg, var(--blue) 10%, var(--purple) 50%, var(--green) 90%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow: 0 0 60px rgba(79,209,255,0.25);
+  }
+  h2{
+    font-size:clamp(1.9rem, 3.6vw, 3.2rem);
+    margin:0 0 0.4em 0;
+    font-weight:800;
+    color:var(--text);
+    text-align:center;
+    letter-spacing:-0.01em;
+  }
+  h2 .accent{ color:var(--blue); }
+  .subtitle{
+    font-size:clamp(1.1rem, 2vw, 1.6rem);
+    color:var(--text-dim);
+    text-align:center;
+    max-width:900px;
+    font-weight:400;
+  }
+  p, li{
+    font-size:clamp(1.05rem, 1.6vw, 1.45rem);
+    line-height:1.5;
+    color:var(--text-dim);
+  }
+  .lead{
+    font-size:clamp(1.3rem, 2.4vw, 2rem);
+    color:var(--text);
+    text-align:center;
+    max-width:1000px;
+    font-weight:600;
+    line-height:1.4;
+  }
+
+  .presenters{
+    display:flex; gap:2.5rem; margin-top:1rem; flex-wrap:wrap; justify-content:center;
+  }
+  .presenter-chip{
+    display:flex; align-items:center; gap:0.7rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    padding:0.7rem 1.4rem;
+    border-radius:50px;
+    font-size:clamp(1rem, 1.5vw, 1.3rem);
+    font-weight:600;
+    box-shadow:var(--shadow);
+  }
+  .presenter-chip .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 12px var(--green);
+  }
+
+  .lock-icon{
+    width:clamp(70px,9vw,120px);
+    height:clamp(70px,9vw,120px);
+    filter: drop-shadow(0 0 24px rgba(79,209,255,0.5));
+  }
+
+  /* Grid / card layouts */
+  .grid{
+    display:grid;
+    gap:1.4rem;
+    width:100%;
+  }
+  .grid-2{ grid-template-columns:repeat(2,1fr); }
+  .grid-3{ grid-template-columns:repeat(3,1fr); }
+  .grid-4{ grid-template-columns:repeat(4,1fr); }
+
+  .card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:1.6rem 1.5rem;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, var(--blue), var(--purple), var(--green));
+  }
+  .card .icon{ font-size:clamp(2rem,3vw,2.8rem); line-height:1; }
+  .card h3{
+    font-size:clamp(1.15rem,1.8vw,1.5rem);
+    margin:0;
+    color:var(--text);
+    font-weight:700;
+  }
+  .card p{ font-size:clamp(0.95rem,1.3vw,1.15rem); margin:0; color:var(--text-dim); }
+
+  .card.career{
+    padding:2rem 1.6rem;
+    border-width:2px;
+    border-image: linear-gradient(160deg, var(--blue), var(--purple)) 1;
+    transition: transform 0.25s ease;
+  }
+  .card.career .icon{ font-size:clamp(2.6rem,4vw,3.6rem); }
+  .card.career h3{ font-size:clamp(1.3rem,2vw,1.7rem); }
+  .card.career p{ font-size:clamp(1rem,1.4vw,1.2rem); }
+
+  .pillar-card{ text-align:center; align-items:center; }
+  .pillar-card .icon{ font-size:clamp(2.6rem,4vw,3.4rem); }
+
+  /* timeline for slide 7 */
+  .timeline{
+    display:flex; width:100%; justify-content:space-between; align-items:stretch; gap:1rem; margin-top:1rem;
+    flex-wrap:wrap;
+  }
+  .tl-step{
+    flex:1; min-width:200px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:1.4rem 1.2rem;
+    position:relative;
+    text-align:center;
+  }
+  .tl-step .num{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg, var(--blue-2), var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800; margin:0 auto 0.7rem auto;
+    box-shadow:0 0 16px rgba(79,209,255,0.4);
+  }
+  .tl-step h3{ margin:0 0 0.4rem 0; font-size:1.25rem; color:var(--text); }
+  .tl-step p{ font-size:1rem; margin:0; }
+  .tl-arrow{ align-self:center; color:var(--blue); font-size:1.6rem; opacity:0.6; }
+
+  /* list w/ bullets styled */
+  ul.styled{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.9rem; width:100%; max-width:900px; }
+  ul.styled li{
+    display:flex; align-items:flex-start; gap:0.8rem;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:0.9rem 1.2rem;
+  }
+  ul.styled li .bullet-icon{ font-size:1.4rem; flex-shrink:0; }
+
+  .stat-row{ display:flex; gap:1.4rem; flex-wrap:wrap; justify-content:center; margin-top:0.6rem; }
+  .stat{
+    background:var(--panel); border:1px solid var(--border); border-radius:16px;
+    padding:1.2rem 1.8rem; text-align:center; min-width:180px;
+    box-shadow:var(--shadow);
+  }
+  .stat .num{ font-size:clamp(1.8rem,3vw,2.6rem); font-weight:800; color:var(--green); text-shadow:0 0 20px rgba(57,255,156,0.4); }
+  .stat .label{ font-size:0.95rem; color:var(--text-dim); }
+
+  /* quiz */
+  .quiz-box{
+    width:100%; max-width:950px; display:flex; flex-direction:column; gap:1.1rem;
+  }
+  .quiz-item{
+    background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:1.3rem 1.5rem;
+  }
+  .quiz-q{ display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .quiz-pass{
+    font-family:'Consolas','Courier New',monospace;
+    font-size:clamp(1.05rem,1.8vw,1.4rem);
+    color:var(--yellow);
+    background:rgba(255,209,102,0.08);
+    border:1px solid rgba(255,209,102,0.3);
+    padding:0.4rem 0.9rem;
+    border-radius:8px;
+  }
+  .quiz-btns{ display:flex; gap:0.6rem; }
+  .btn{
+    cursor:pointer; border:none; border-radius:10px; padding:0.6rem 1.1rem;
+    font-size:1rem; font-weight:700; font-family:inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn-strong{ background:rgba(57,255,156,0.15); color:var(--green); border:1px solid var(--green); }
+  .btn-weak{ background:rgba(255,93,122,0.15); color:var(--red); border:1px solid var(--red); }
+  .quiz-result{
+    margin-top:0.8rem; font-size:1.05rem; font-weight:600; min-height:1.6em;
+    display:none;
+    border-radius:10px; padding:0.7rem 1rem;
+  }
+  .quiz-result.show{ display:block; }
+  .quiz-result.correct{ background:rgba(57,255,156,0.1); color:var(--green); border:1px solid rgba(57,255,156,0.4); }
+  .quiz-result.incorrect{ background:rgba(255,93,122,0.1); color:var(--red); border:1px solid rgba(255,93,122,0.4); }
+
+  .final-msg{
+    margin-top:1rem;
+    font-size:clamp(1.2rem,2.2vw,1.7rem);
+    text-align:center;
+    max-width:950px;
+    font-weight:700;
+    color:var(--text);
+    background:linear-gradient(160deg, rgba(79,209,255,0.08), rgba(167,139,250,0.08));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:1.4rem 1.8rem;
+  }
+
+  /* progress + nav */
+  .progress-wrap{
+    position:fixed; bottom:0; left:0; right:0; height:5px; background:rgba(255,255,255,0.06); z-index:20;
+  }
+  .progress-bar{
+    height:100%;
+    background:linear-gradient(90deg, var(--blue), var(--purple), var(--green));
+    width:0%;
+    transition:width 0.4s ease;
+    box-shadow:0 0 12px rgba(79,209,255,0.6);
+  }
+  .hud{
+    position:fixed; top:1.2rem; left:1.5rem; right:1.5rem;
+    display:flex; justify-content:space-between; align-items:center;
+    z-index:20; pointer-events:none;
+    font-size:0.95rem; color:var(--text-dim);
+  }
+  .hud-left{ display:flex; align-items:center; gap:0.6rem; font-weight:700; letter-spacing:0.05em; }
+  .hud-left .dot{ width:8px;height:8px;border-radius:50%;background:var(--green); box-shadow:0 0 10px var(--green); }
+  .hud-right{ pointer-events:all; display:flex; gap:0.6rem; }
+  .icon-btn{
+    pointer-events:all;
+    background:var(--panel);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    width:40px;height:40px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer; font-size:1.1rem;
+    transition:all 0.2s ease;
+  }
+  .icon-btn:hover{ color:var(--blue); border-color:var(--blue); }
+
+  .nav-controls{
+    position:fixed; bottom:1.6rem; left:50%; transform:translateX(-50%);
+    z-index:20; display:flex; align-items:center; gap:1.2rem;
+    background:rgba(11,17,32,0.75);
+    backdrop-filter: blur(10px);
+    border:1px solid var(--border);
+    padding:0.6rem 1rem;
+    border-radius:50px;
+    box-shadow:var(--shadow);
+  }
+  .nav-btn{
+    cursor:pointer; background:var(--panel); border:1px solid var(--border);
+    color:var(--text); width:44px; height:44px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; transition:all 0.2s ease;
+  }
+  .nav-btn:hover{ background:var(--blue-2); border-color:var(--blue-2); transform:scale(1.08); }
+  .nav-btn:disabled{ opacity:0.3; cursor:not-allowed; }
+  .nav-counter{ font-weight:700; letter-spacing:0.03em; min-width:90px; text-align:center; }
+  .nav-counter .cur{ color:var(--blue); }
+
+  .click-zone{ position:absolute; top:0; bottom:0; width:12%; z-index:15; cursor:pointer; }
+  .click-zone.left{ left:0; }
+  .click-zone.right{ right:0; }
+
+  ::selection{ background:rgba(79,209,255,0.35); }
+
+  @media (max-width: 900px){
+    .grid-2, .grid-3, .grid-4{ grid-template-columns:1fr; }
+    .timeline{ flex-direction:column; }
+    .tl-arrow{ transform:rotate(90deg); }
+    .hud{ font-size:0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow" id="bgGlow"></div>
+
+<div class="hud">
+  <div class="hud-left"><span class="dot"></span> CIBERSEGURANÇA // FEIRA DE PROFISSÕES</div>
+  <div class="hud-right">
+    <button class="icon-btn" id="fsBtn" title="Tela cheia (F)">⛶</button>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+  <div class="click-zone left" id="zoneLeft"></div>
+  <div class="click-zone right" id="zoneRight"></div>
+
+  <!-- SLIDE 1: CAPA -->
+  <section class="slide" data-index="0">
+    <div class="slide-inner">
+      <svg class="lock-icon" viewBox="0 0 100 100" fill="none">
+        <rect x="25" y="45" width="50" height="42" rx="8" fill="url(#g1)" stroke="#4fd1ff" stroke-width="2"/>
+        <path d="M35 45V32a15 15 0 0 1 30 0v13" stroke="#a78bfa" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="50" cy="63" r="6" fill="#060912"/>
+        <rect x="47" y="67" width="6" height="12" rx="3" fill="#060912"/>
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3b82f6"/>
+            <stop offset="1" stop-color="#39ff9c"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="eyebrow">Feira de Profissões</div>
+      <h1>Cibersegurança:<br>Protegendo o Mundo Digital</h1>
+      <p class="subtitle">Uma jornada pelo universo da segurança digital</p>
+      <div class="presenters">
+        <div class="presenter-chip"><span class="dot"></span> Miguel</div>
+        <div class="presenter-chip"><span class="dot"></span> Hygor</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: PERGUNTA DE ABERTURA -->
+  <section class="slide" data-index="1">
+    <div class="slide-inner">
+      <div class="eyebrow">Vamos começar</div>
+      <div style="font-size:clamp(3rem,6vw,5rem);">🤔📱⚠️</div>
+      <p class="lead">"Quem aqui já recebeu uma mensagem estranha pedindo para clicar em um link,
+        já teve alguma conta tentando ser invadida, ou conhece alguém que caiu em um golpe pela internet?"</p>
+      <p class="subtitle">Levante a mão! 🙋</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: O QUE É CIBERSEGURANÇA -->
+  <section class="slide" data-index="2">
+    <div class="slide-inner">
+      <div class="eyebrow">Conceito</div>
+      <h2>O que é <span class="accent">Cibersegurança</span>?</h2>
+      <p class="lead">É o conjunto de cuidados e tecnologias usados para proteger computadores,
+        redes e dados contra ataques digitais.</p>
+      <div class="grid grid-3" style="margin-top:1rem;">
+        <div class="card"><div class="icon">🔐</div><h3>Dados pessoais</h3><p>Fotos, senhas, conversas e documentos.</p></div>
+        <div class="card"><div class="icon">💳</div><h3>Dados financeiros</h3><p>Contas bancárias, cartões e Pix.</p></div>
+        <div class="card"><div class="icon">🏢</div><h3>Empresas e governo</h3><p>Sistemas, redes e informações públicas.</p></div>
+      </div>
+      <p class="subtitle" style="margin-top:1rem;">Não é só para quem trabalha com tecnologia — quem usa celular,
+        WhatsApp, Instagram, e-mail, banco ou compras online também precisa se importar.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: AMEAÇAS COMUNS -->
+  <section class="slide" data-index="3">
+    <div class="slide-inner">
+      <div class="eyebrow">Fique atento</div>
+      <h2>Ameaças <span class="accent">Comuns</span></h2>
+      <div class="grid grid-4">
+        <div class="card"><div class="icon">🦠</div><h3>Vírus</h3><p>Programa malicioso que infecta e danifica arquivos e sistemas.</p></div>
+        <div class="card"><div class="icon">🎣</div><h3>Phishing</h3><p>Mensagens falsas que enganam para roubar dados ou senhas.</p></div>
+        <div class="card"><div class="icon">🔒</div><h3>Ransomware</h3><p>Sequestra seus arquivos e cobra resgate para liberá-los.</p></div>
+        <div class="card"><div class="icon">🗝️</div><h3>Roubo de Senha</h3><p>Criminosos descobrem ou roubam senhas para invadir contas.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: POR QUE IMPORTA -->
+  <section class="slide" data-index="4">
+    <div class="slide-inner">
+      <div class="eyebrow">Impacto real</div>
+      <h2>Por que isso <span class="accent">importa</span>?</h2>
+      <ul class="styled">
+        <li><span class="bullet-icon">📉</span> Roubo de dados pessoais e sigilosos</li>
+        <li><span class="bullet-icon">💸</span> Perdas financeiras para pessoas e empresas</li>
+        <li><span class="bullet-icon">💔</span> Danos à reputação e à confiança</li>
+      </ul>
+      <div class="stat-row">
+        <div class="stat"><div class="num">Milhões</div><div class="label">de brasileiros afetados por golpes digitais todo ano</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: OS TRÊS PILARES (CIA) -->
+  <section class="slide" data-index="5">
+    <div class="slide-inner">
+      <div class="eyebrow">Os três pilares</div>
+      <h2>Confidencialidade, Integridade e <span class="accent">Disponibilidade</span></h2>
+      <div class="grid grid-3">
+        <div class="card pillar-card"><div class="icon">📔</div><h3>Confidencialidade</h3><p>Como um diário trancado — só quem tem a chave pode ler.</p></div>
+        <div class="card pillar-card"><div class="icon">📝</div><h3>Integridade</h3><p>Um documento que ninguém consegue falsificar ou alterar.</p></div>
+        <div class="card pillar-card"><div class="icon">🏦</div><h3>Disponibilidade</h3><p>O banco aberto no horário certo, sempre que você precisa.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: AMEAÇA, VULNERABILIDADE, RISCO, INCIDENTE -->
+  <section class="slide" data-index="6">
+    <div class="slide-inner">
+      <div class="eyebrow">Conceitos encadeados</div>
+      <h2>Ameaça → Vulnerabilidade → Risco → <span class="accent">Incidente</span></h2>
+      <div class="timeline">
+        <div class="tl-step"><div class="num">1</div><h3>⚡ Ameaça</h3><p>O perigo que existe — ex: um hacker tentando invadir.</p></div>
+        <div class="tl-arrow">→</div>
+        <div class="tl-step"><div class="num">2</div><h3>🕳️ Vulnerabilidade</h3><p>A fraqueza que pode ser explorada — ex: uma senha fraca.</p></div>
+        <div class="tl-arrow">→</div>
+        <div class="tl-step"><div class="num">3</div><h3>🎲 Risco</h3><p>A chance de a ameaça explorar a vulnerabilidade.</p></div>
+        <div class="tl-arrow">→</div>
+        <div class="tl-step"><div class="num">4</div><h3>🚨 Incidente</h3><p>Quando o ataque realmente acontece.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: CELULAR -->
+  <section class="slide" data-index="7">
+    <div class="slide-inner">
+      <div class="eyebrow">No dia a dia</div>
+      <h2>Cibersegurança no <span class="accent">Celular</span></h2>
+      <div class="grid grid-4">
+        <div class="card"><div class="icon">🔑</div><h3>Senhas e biometria</h3><p>Use senha, PIN, digital ou reconhecimento facial.</p></div>
+        <div class="card"><div class="icon">🔄</div><h3>Atualizações</h3><p>Mantenha o sistema e os apps sempre atualizados.</p></div>
+        <div class="card"><div class="icon">🔦</div><h3>Permissões de apps</h3><p>Por que um app de lanterna pediria acesso aos seus contatos?</p></div>
+        <div class="card"><div class="icon">🛡️</div><h3>Criptografia</h3><p>Protege suas mensagens e arquivos de olhares indevidos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: BANCO E PIX -->
+  <section class="slide" data-index="8">
+    <div class="slide-inner">
+      <div class="eyebrow">Dinheiro digital</div>
+      <h2>Cibersegurança no <span class="accent">Banco e Pix</span></h2>
+      <div class="grid grid-4">
+        <div class="card"><div class="icon">✅</div><h3>MFA</h3><p>Autenticação em múltiplos fatores para confirmar que é você.</p></div>
+        <div class="card"><div class="icon">🔐</div><h3>Criptografia</h3><p>Seus dados bancários viajam protegidos e ilegíveis para terceiros.</p></div>
+        <div class="card"><div class="icon">🔔</div><h3>Alertas de transação</h3><p>Você é avisado na hora sobre qualquer movimentação.</p></div>
+        <div class="card"><div class="icon">📊</div><h3>Limites</h3><p>Reduzem o prejuízo em caso de golpe ou invasão.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: REDES SOCIAIS, EMAIL, COMPRAS -->
+  <section class="slide" data-index="9">
+    <div class="slide-inner">
+      <div class="eyebrow">Vida online</div>
+      <h2>Redes Sociais, E-mail e <span class="accent">Compras</span></h2>
+      <div class="grid grid-3">
+        <div class="card"><div class="icon">🔑</div><h3>Senhas únicas</h3><p>Uma senha diferente para cada conta importante.</p></div>
+        <div class="card"><div class="icon">📲</div><h3>Verificação em duas etapas</h3><p>Uma camada extra de proteção além da senha.</p></div>
+        <div class="card"><div class="icon">🎣</div><h3>Cuidado com links</h3><p>Desconfie de links suspeitos — pode ser phishing.</p></div>
+      </div>
+      <div class="card" style="margin-top:1.2rem; max-width:600px; text-align:center; align-items:center;">
+        <div class="icon">🔒</div><h3>Ao comprar online</h3><p>Sempre procure HTTPS e o ícone de cadeado no navegador.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 11: SENHAS FORTES VS FRACAS + QUIZ -->
+  <section class="slide" data-index="10">
+    <div class="slide-inner">
+      <div class="eyebrow">Quiz ao vivo</div>
+      <h2>Senhas Fortes vs. <span class="accent">Fracas</span></h2>
+      <ul class="styled" style="max-width:950px;">
+        <li><span class="bullet-icon">📏</span> Mínimo de 12 caracteres</li>
+        <li><span class="bullet-icon">🔀</span> Misture letras, números e símbolos</li>
+        <li><span class="bullet-icon">💡</span> Use frases criativas, tipo "Meu_Gato_Preto_Come_Ração_2024!"</li>
+        <li><span class="bullet-icon">🚫</span> Evite nome, data de nascimento ou nome de pet</li>
+      </ul>
+      <div class="quiz-box">
+        <div class="quiz-item">
+          <div class="quiz-q">
+            <span class="quiz-pass">"Gatinho2010"</span>
+            <div class="quiz-btns">
+              <button class="btn btn-strong" onclick="checkQuiz(this,'weak')">💪 Forte</button>
+              <button class="btn btn-weak" onclick="checkQuiz(this,'weak')">⚠️ Fraca</button>
+            </div>
+          </div>
+          <div class="quiz-result"></div>
+        </div>
+        <div class="quiz-item">
+          <div class="quiz-q">
+            <span class="quiz-pass">"T!gr3$_N@_C@s@_2024"</span>
+            <div class="quiz-btns">
+              <button class="btn btn-strong" onclick="checkQuiz(this,'strong')">💪 Forte</button>
+              <button class="btn btn-weak" onclick="checkQuiz(this,'strong')">⚠️ Fraca</button>
+            </div>
+          </div>
+          <div class="quiz-result"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 12: GERENCIADOR DE SENHAS E MFA -->
+  <section class="slide" data-index="11">
+    <div class="slide-inner">
+      <div class="eyebrow">Ferramentas essenciais</div>
+      <h2>Gerenciador de Senhas e <span class="accent">MFA</span></h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="icon">🗄️</div>
+          <h3>Gerenciador de senhas</h3>
+          <p>Um cofre digital que cria e guarda senhas fortes e únicas para cada conta.
+            Exemplos: Bitwarden, 1Password, LastPass.</p>
+        </div>
+        <div class="card">
+          <div class="icon">✅</div>
+          <h3>MFA (Múltiplos Fatores)</h3>
+          <p>Além da senha, um segundo código (app, SMS ou biometria) confirma que é realmente você.</p>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:0.6rem;">Usar os dois juntos: mesmo se a senha vazar, o MFA impede a invasão. 🛡️</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 13: PROFISSÕES -->
+  <section class="slide" data-index="12">
+    <div class="slide-inner">
+      <div class="eyebrow">⭐ Destaque da Feira ⭐</div>
+      <h2>Profissões em <span class="accent">Cibersegurança</span></h2>
+      <div class="grid grid-4">
+        <div class="card career"><div class="icon">🛡️</div><h3>Analista de Segurança</h3><p>Monitora sistemas e redes para detectar e evitar ataques.</p></div>
+        <div class="card career"><div class="icon">🕵️</div><h3>Pentester / Ethical Hacker</h3><p>Invade sistemas de forma autorizada para encontrar falhas antes dos criminosos.</p></div>
+        <div class="card career"><div class="icon">🚑</div><h3>Resposta a Incidentes</h3><p>Age rapidamente quando um ataque acontece, para conter o dano.</p></div>
+        <div class="card career"><div class="icon">🔬</div><h3>Forense Digital</h3><p>Investiga crimes digitais e reúne provas do que aconteceu.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 14: CONCLUSÃO / 4 DICAS -->
+  <section class="slide" data-index="13">
+    <div class="slide-inner">
+      <div class="eyebrow">Para levar com você</div>
+      <h2>4 Dicas <span class="accent">Finais</span></h2>
+      <div class="grid grid-4">
+        <div class="card"><div class="icon">🔑</div><h3>Senhas fortes</h3><p>Use senhas fortes e diferentes para cada conta.</p></div>
+        <div class="card"><div class="icon">📲</div><h3>Verificação em 2 etapas</h3><p>Ative sempre que possível.</p></div>
+        <div class="card"><div class="icon">🎣</div><h3>Desconfie de links</h3><p>Links suspeitos podem ser phishing.</p></div>
+        <div class="card"><div class="icon">🔄</div><h3>Mantenha atualizado</h3><p>Dispositivos atualizados fecham brechas de segurança.</p></div>
+      </div>
+      <div class="final-msg">"Cibersegurança não é só responsabilidade de especialistas —<br>é responsabilidade de todos que usam a internet."</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 15: ENCERRAMENTO -->
+  <section class="slide" data-index="14">
+    <div class="slide-inner">
+      <svg class="lock-icon" viewBox="0 0 100 100" fill="none">
+        <rect x="25" y="45" width="50" height="42" rx="8" fill="url(#g2)" stroke="#39ff9c" stroke-width="2"/>
+        <path d="M35 45V32a15 15 0 0 1 30 0v13" stroke="#4fd1ff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="50" cy="63" r="6" fill="#060912"/>
+        <rect x="47" y="67" width="6" height="12" rx="3" fill="#060912"/>
+        <defs>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#a78bfa"/>
+            <stop offset="1" stop-color="#4fd1ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h1 style="font-size:clamp(2.6rem,6vw,5rem);">Obrigado!</h1>
+      <p class="lead">Dúvidas? 🙋‍♂️🙋‍♀️</p>
+      <div class="presenters">
+        <div class="presenter-chip"><span class="dot"></span> Miguel</div>
+        <div class="presenter-chip"><span class="dot"></span> Hygor</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav-controls">
+  <button class="nav-btn" id="prevBtn" title="Slide anterior (←)">‹</button>
+  <div class="nav-counter"><span class="cur" id="curNum">1</span> / <span id="totalNum">15</span></div>
+  <button class="nav-btn" id="nextBtn" title="Próximo slide (→)">›</button>
+</div>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var current = 0;
+
+  var curNum = document.getElementById('curNum');
+  var totalNum = document.getElementById('totalNum');
+  var progressBar = document.getElementById('progressBar');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+
+  totalNum.textContent = total;
+
+  function render(){
+    slides.forEach(function(s, i){
+      s.classList.remove('active','prev');
+      if(i === current){ s.classList.add('active'); }
+      else if(i < current){ s.classList.add('prev'); }
+    });
+    curNum.textContent = current + 1;
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function goTo(i){
+    if(i < 0 || i >= total) return;
+    current = i;
+    render();
+  }
+  function next(){ goTo(current + 1); }
+  function prev(){ goTo(current - 1); }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+  document.getElementById('zoneLeft').addEventListener('click', prev);
+  document.getElementById('zoneRight').addEventListener('click', next);
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){
+      e.preventDefault(); next();
+    } else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){
+      e.preventDefault(); prev();
+    } else if(e.key === 'Home'){
+      e.preventDefault(); goTo(0);
+    } else if(e.key === 'End'){
+      e.preventDefault(); goTo(total - 1);
+    } else if(e.key === 'f' || e.key === 'F'){
+      toggleFullscreen();
+    }
+  });
+
+  // swipe support (touch)
+  var touchStartX = null;
+  document.addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(touchStartX === null) return;
+    var dx = e.changedTouches[0].screenX - touchStartX;
+    if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
+    touchStartX = null;
+  }, {passive:true});
+
+  // fullscreen
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(function(){});
+    } else {
+      document.exitFullscreen && document.exitFullscreen();
+    }
+  }
+  document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
+
+  // mouse glow effect
+  var bgGlow = document.getElementById('bgGlow');
+  document.addEventListener('mousemove', function(e){
+    bgGlow.style.setProperty('--mx', e.clientX + 'px');
+    bgGlow.style.setProperty('--my', e.clientY + 'px');
+  });
+
+  render();
+
+  // expose quiz checker
+  window.checkQuiz = function(btn, correctness){
+    var item = btn.closest('.quiz-item');
+    var resultBox = item.querySelector('.quiz-result');
+    var clickedStrong = btn.classList.contains('btn-strong');
+    var isCorrect = (correctness === 'strong' && clickedStrong) || (correctness === 'weak' && !clickedStrong);
+    resultBox.classList.remove('correct','incorrect');
+    if(correctness === 'weak'){
+      resultBox.textContent = '⚠️ Fraca! Usa nome comum + números sequenciais, fácil de adivinhar ou quebrar.';
+    } else {
+      resultBox.textContent = '💪 Forte! Mistura letras, números e símbolos de forma não óbvia.';
+    }
+    resultBox.classList.add('show', isCorrect ? 'correct' : 'incorrect');
+  };
+})();
+</script>
+
+</body>
+</html>
